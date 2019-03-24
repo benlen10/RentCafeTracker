@@ -11,6 +11,15 @@ namespace RentCafeTracker
         [DataMember]
         private static List<Date> dateList;
 
+        [DataMember]
+        private static Unit lowestStudio;
+
+        [DataMember]
+        private static Unit lowestOneBedroom;
+
+        [DataMember]
+        private static Unit lowestTwoBedroom;
+
         // Public constructor
         public static void Initalize()
         {
@@ -37,32 +46,84 @@ namespace RentCafeTracker
             return dateList;
         }
 
-        public static void LowestPrices()
+        public static void CalculateLowestPrices()
         {
-            Unit lowestStudio = new Unit()
+            if (lowestStudio == null)
             {
-                rent = 10000
-            };
+                lowestStudio = new Unit()
+                {
+                    rent = 10000
+                };
+            }
 
-            Unit lowest1Bedroom = new Unit()
+            if (lowestOneBedroom == null)
             {
-                rent = 10000
-            };
+                lowestOneBedroom = new Unit()
+                {
+                    rent = 10000
+                };
+            }
 
-            Unit lowest2Bedroom = new Unit()
+            if (lowestTwoBedroom == null)
             {
-                rent = 10000
-            };
-/*
+                lowestTwoBedroom = new Unit()
+                {
+                    rent = 10000
+                };
+            }
+
 
             foreach (Date date in dateList)
             {
                 foreach (Unit unit in date.GetUnitsList())
                 {
-                    if(unit.bedType.Equals())
+                    if (unit.bedType.Equals(Constants.STUDIO))
+                    {
+                        if (unit.rent < lowestStudio.rent)
+                        {
+                            lowestStudio = unit;
+                            Console.WriteLine("ALERT: New low price found: " + Constants.STUDIO);
+                        }
+                    }
+                    if (unit.bedType.Equals(Constants.ONE_BED))
+                    {
+                        if (unit.rent < lowestOneBedroom.rent)
+                        {
+                            lowestOneBedroom = unit;
+                            Console.WriteLine("ALERT: New low price found: " + Constants.ONE_BED);
+                        }
+                    }
+                    if (unit.bedType.Equals(Constants.TWO_BED))
+                    {
+                        if (unit.rent < lowestTwoBedroom.rent)
+                        {
+                            lowestTwoBedroom = unit;
+                            Console.WriteLine("ALERT: New low price found: " + Constants.TWO_BED);
+                        }
+                    }
                 }
                 
-            }*/
+            }
+            // Print results
+            Console.WriteLine("\n\nLOWEST HISTORICAL STUDIO PRICE: ");
+            if (lowestStudio.rent != 10000)
+            {
+                lowestStudio.PrintUnitInfo();
+            }
+
+            // Print results
+            Console.WriteLine("\n\nLOWEST HISTORICAL ONE BEDROOM PRICE:");
+            if (lowestOneBedroom.rent != 10000)
+            {
+                lowestOneBedroom.PrintUnitInfo();
+            }
+
+            // Print results
+            Console.WriteLine("\n\nLOWEST HISTORICAL TWO BEDROOM PRICE:");
+            if (lowestTwoBedroom.rent != 10000)
+            {
+                lowestTwoBedroom.PrintUnitInfo();
+            }
         }
     }
 }

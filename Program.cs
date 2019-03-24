@@ -10,13 +10,6 @@ namespace RentCafeTracker
 {
     public class Program
     {
-        // Constant Values
-        protected const string API_URL = "https://www.rentnema.com/rent-cafe-api.php?type=0";
-        protected const string DATABASE_FILENAME = "database.xml";
-        protected const string JSON_DIRECTORY_NAME = "json-data-files/";
-        protected static List<string> API_TYPE_LIST = new List<string>(new[] {"0", "1", "2"});
-
-
         static void Main(string[] args)
         {
             // Import existing database
@@ -49,6 +42,10 @@ namespace RentCafeTracker
 
             //FetchNewData();
             ImportLocalFile("data.json");
+
+            // Save database
+            SaveDatabase();
+            Database.CalculateLowestPrices();
         }
 
 
@@ -56,7 +53,7 @@ namespace RentCafeTracker
         {
             Date newDate = new Date();
 
-            foreach (string apiType in API_TYPE_LIST)
+            foreach (string apiType in Constants.API_TYPE_LIST)
             {
                 // Create a new date object and import units data
                 string stringData = DownloadJsonData(apiType);
@@ -65,16 +62,10 @@ namespace RentCafeTracker
             }
 
             // Load new date entry into database
+            Console.WriteLine("Read data for the following number of units:" + newDate.GetUnitsList().Count);
             Database.AddDate(newDate);
 
-            // Save database
-            if (SaveDatabase())
-            {
-                Console.WriteLine("Database saved successfully");
-                return true;
-            }
-
-            return false;
+            return true;
         }
 
         public static bool ImportLocalFile(string fileName)
@@ -83,18 +74,19 @@ namespace RentCafeTracker
             string stringData = ReadJsonFileToString(fileName);
             Rootobject jsonData = SeralizeJsonData<Rootobject>(stringData);
             newDate.ImportUnitData(jsonData.units);
+            Console.WriteLine("Read data for the following number of units:" + newDate.GetUnitsList().Count);
             Database.AddDate(newDate);
             return true;
         }
 
         private static string DownloadJsonData(string apiType)
         {
-            if (!Directory.Exists(JSON_DIRECTORY_NAME))
+            if (!Directory.Exists(Constants.JSON_DIRECTORY_NAME))
             {
-                Directory.CreateDirectory(JSON_DIRECTORY_NAME);
+                Directory.CreateDirectory(Constants.JSON_DIRECTORY_NAME);
             }
 
-            string url = (API_URL + apiType);
+            string url = (Constants.API_URL + apiType);
 
             using (var w = new WebClient())
             {
@@ -102,7 +94,7 @@ namespace RentCafeTracker
                 try
                 {
                     jsonString = w.DownloadString(url);
-                    w.DownloadFile(url, (JSON_DIRECTORY_NAME + DateTime.Today.ToShortDateString() + "data.json"));
+                    w.DownloadFile(url, (Constants.JSON_DIRECTORY_NAME + DateTime.Today.ToShortDateString() + "data.json"));
                 }
                 catch (Exception)
                 {
@@ -140,7 +132,7 @@ namespace RentCafeTracker
         /// Load the database file from the specified path
         /// </summary>
         /// <returns>false if the database file does not exist</returns>
-        public static bool LoadDatabase(string path = DATABASE_FILENAME)
+        public static bool LoadDatabase(string path = Constants.DATABASE_FILENAME)
         {
             //First check if the database file exists
             if (!File.Exists(path))
@@ -164,7 +156,7 @@ namespace RentCafeTracker
         /// <summary>
         /// Save the database to the specified path. Delete any preexisting database files
         /// </summary>
-        public static bool SaveDatabase(string path = DATABASE_FILENAME)
+        public static bool SaveDatabase(string path = Constants.DATABASE_FILENAME)
         {
             var dateList = Database.GetDateList();
 
@@ -179,6 +171,7 @@ namespace RentCafeTracker
             {
                 s.WriteObject(xmlWriter, dateList);
             }
+            Console.WriteLine("Database saved successfully");
             return true;
         }
     }

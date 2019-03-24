@@ -111,6 +111,18 @@ namespace RentCafeTracker
         public string fp_name { get; set; }
         public string fi { get; set; }
         public int uf { get; set; }
+        public DateTime date_fetched { get; set; }
+
+        public void PrintUnitInfo()
+        {
+            Console.WriteLine("Date Fetched: " + date_fetched.ToShortDateString());
+            Console.WriteLine("Unit ID: " + unitSpace.ToString());
+            Console.WriteLine("Price: $" + rent.ToString());
+            Console.WriteLine("Square Feet: " + sq.ToString());
+            Console.WriteLine("Bedrooms: " + bedType);
+            Console.WriteLine("Floorplan Type: " + sq.ToString());
+            Console.WriteLine("Date Available: " + dateAvailable);
+        }
     }
 
     public class _11_15
