@@ -27,8 +27,14 @@ namespace RentCafeTracker
 
         public void ImportUnitData(Unit[] unitArray)
         {
+            Console.WriteLine("Read data for the following number of units:" + unitArray.Length);
             List<Unit> units = new List<Unit>(unitArray);
             units.ForEach(u => unitList.Add(u));
+        }
+
+        public List<Unit> GetUnitsList()
+        {
+            return unitList;
         }
     }
 }

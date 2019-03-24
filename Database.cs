@@ -36,5 +36,33 @@ namespace RentCafeTracker
         {
             return dateList;
         }
+
+        public static void LowestPrices()
+        {
+            Unit lowestStudio = new Unit()
+            {
+                rent = 10000
+            };
+
+            Unit lowest1Bedroom = new Unit()
+            {
+                rent = 10000
+            };
+
+            Unit lowest2Bedroom = new Unit()
+            {
+                rent = 10000
+            };
+/*
+
+            foreach (Date date in dateList)
+            {
+                foreach (Unit unit in date.GetUnitsList())
+                {
+                    if(unit.bedType.Equals())
+                }
+                
+            }*/
+        }
     }
 }

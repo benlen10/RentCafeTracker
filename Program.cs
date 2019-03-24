@@ -11,18 +11,14 @@ namespace RentCafeTracker
     public class Program
     {
         // Constant Values
-        private const string API_URL = "https://www.rentnema.com/rent-cafe-api.php?type=0";
-        private const string DATABASE_FILENAME = "database.xml";
-        private const string JSON_DIRECTORY_NAME = "json-data-files/";
+        protected const string API_URL = "https://www.rentnema.com/rent-cafe-api.php?type=0";
+        protected const string DATABASE_FILENAME = "database.xml";
+        protected const string JSON_DIRECTORY_NAME = "json-data-files/";
+        protected static List<string> API_TYPE_LIST = new List<string>(new[] {"0", "1", "2"});
 
 
         static void Main(string[] args)
         {
-            // string stringData = DownloadJsonData(API_URL);
-            string stringData = ReadJsonFileToString("data.json");
-            Rootobject jsonData = SeralizeJsonData<Rootobject>(stringData);
-            //Console.WriteLine("JSON DATA: " + jsonData.units[0].dateAvailable);
-
             // Import existing database
             Database.Initalize();
             if (LoadDatabase())
@@ -34,10 +30,39 @@ namespace RentCafeTracker
                 Console.WriteLine("Failed to load database");
             }
 
-            // Create a new date object and import units data
+            // Parse args
+            if (args.Length > 0)
+            {
+                if (args[0].Equals("fetch"))
+                {
+
+                }
+                else if (args[0].Equals("import"))
+                {
+
+                }
+                else if (args[0].Equals("analysis"))
+                {
+
+                }
+            }
+
+            //FetchNewData();
+            ImportLocalFile("data.json");
+        }
+
+
+        private static bool FetchNewData()
+        {
             Date newDate = new Date();
-            newDate.ImportUnitData(jsonData.units);
-            Console.WriteLine("Read data for the following number of units:" + jsonData.units.Length.ToString());
+
+            foreach (string apiType in API_TYPE_LIST)
+            {
+                // Create a new date object and import units data
+                string stringData = DownloadJsonData(apiType);
+                Rootobject jsonData = SeralizeJsonData<Rootobject>(stringData);
+                newDate.ImportUnitData(jsonData.units);
+            }
 
             // Load new date entry into database
             Database.AddDate(newDate);
@@ -46,15 +71,30 @@ namespace RentCafeTracker
             if (SaveDatabase())
             {
                 Console.WriteLine("Database saved successfully");
+                return true;
             }
+
+            return false;
         }
 
-        private static string DownloadJsonData(string url)
+        public static bool ImportLocalFile(string fileName)
+        {
+            Date newDate = new Date();
+            string stringData = ReadJsonFileToString(fileName);
+            Rootobject jsonData = SeralizeJsonData<Rootobject>(stringData);
+            newDate.ImportUnitData(jsonData.units);
+            Database.AddDate(newDate);
+            return true;
+        }
+
+        private static string DownloadJsonData(string apiType)
         {
             if (!Directory.Exists(JSON_DIRECTORY_NAME))
             {
                 Directory.CreateDirectory(JSON_DIRECTORY_NAME);
             }
+
+            string url = (API_URL + apiType);
 
             using (var w = new WebClient())
             {
@@ -74,10 +114,20 @@ namespace RentCafeTracker
 
         private static string ReadJsonFileToString(string fileName)
         {
-            FileStream jsonFilestream = File.OpenRead(fileName);
-            TextReader tr = new StreamReader(jsonFilestream);
-            string jsonString = tr.ReadToEnd();
-            jsonFilestream.Close();
+            string jsonString = "Null";
+            try
+            {
+                FileStream jsonFilestream = File.OpenRead(fileName);
+                TextReader tr = new StreamReader(jsonFilestream);
+                jsonString = tr.ReadToEnd();
+                jsonFilestream.Close();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception caught: " + e.Message);
+            }
+
+
             return jsonString;
         }
 
