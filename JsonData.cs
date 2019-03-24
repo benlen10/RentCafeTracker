@@ -102,11 +102,11 @@ namespace RentCafeTracker
         public string sq { get; set; }
         public int bathType { get; set; }
         public int ufg { get; set; }
-        public string[] specials { get; set; }
+        //public string[] specials { get; set; }
         public string unitSpace { get; set; }
         public string bedType { get; set; }
         public string un { get; set; }
-        public string apply_url { get; set; }
+        //public string apply_url { get; set; }
         public int rent { get; set; }
         public string fp_name { get; set; }
         public string fi { get; set; }
