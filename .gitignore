@@ -102,3 +102,12 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+*.dll
+*.json
+*.pdb
+*.targets
+*.cache
+*.props
+*.csproj
+obj/Debug/netcoreapp2.1/RentCafeTracker.csproj.FileListAbsolute.txt
+obj/Debug/netcoreapp2.1/RentCafeTracker.AssemblyInfo.cs
