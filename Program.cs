@@ -79,22 +79,51 @@ namespace RentCafeTracker
             return true;
         }
 
+        public static bool ImportAllLocalFiles(string baseDirectory)
+        {
+            var subdirectoryList = Directory.GetDirectories(baseDirectory);
+            foreach (var subdirName in subdirectoryList)
+            {
+                var dateTime = DateTime.Parse(subdirName);
+                Date newDate = new Date(dateTime);
+                var fileList = Directory.GetFiles(subdirName);
+                foreach (var fileName in fileList)
+                {
+                    string stringData = ReadJsonFileToString(fileName);
+                    Rootobject jsonData = SeralizeJsonData<Rootobject>(stringData);
+                    newDate.ImportUnitData(jsonData.units);
+                }
+                Console.WriteLine("Read data for the following number of units:" + newDate.GetUnitsList().Count);
+                Database.AddDate(newDate);
+            }
+            
+            
+            return true;
+        }
+
+
         private static string DownloadJsonData(string apiType)
         {
-            if (!Directory.Exists(Constants.JSON_DIRECTORY_NAME))
+            var timestamp = DateTime.Today;
+            string subdirectoryName = (timestamp.Year + "-" + timestamp.Month + "-" +
+                                       timestamp.Day + "\\");
+            string directoryPath = (Constants.JSON_DIRECTORY_NAME + subdirectoryName);
+            if (!Directory.Exists(directoryPath))
             {
-                Directory.CreateDirectory(Constants.JSON_DIRECTORY_NAME);
+                Directory.CreateDirectory(directoryPath);
             }
 
             string url = (Constants.API_URL + apiType);
 
-            using (var w = new WebClient())
+            using (var webClient = new WebClient())
             {
                 var jsonString = string.Empty;
                 try
                 {
-                    jsonString = w.DownloadString(url);
-                    w.DownloadFile(url, (Constants.JSON_DIRECTORY_NAME + DateTime.Today.ToShortDateString() + "data.json"));
+                    jsonString = webClient.DownloadString(url);
+                    
+                    string fileName = (directoryPath + "dataType" + apiType + ".json");
+                    webClient.DownloadFile(url, fileName);
                 }
                 catch (Exception)
                 {

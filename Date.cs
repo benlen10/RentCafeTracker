@@ -17,10 +17,9 @@ namespace RentCafeTracker
         public DateTime timestamp;
 
         // Default constructor
-        public Date()
+        public Date(DateTime timestamp)
         {
             // Fetch current timestamp
-            timestamp = DateTime.Today;
             Console.WriteLine(timestamp.ToShortDateString());
             unitList = new List<Unit>();
         }
